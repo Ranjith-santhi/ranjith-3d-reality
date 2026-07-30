@@ -21,6 +21,7 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
     const scrollIconRef = useRef(null);
     const [images, setImages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [loadProgress, setLoadProgress] = useState(0);
     const [internalThemeIndex, setInternalThemeIndex] = useState(0);
 
     const DEFAULT_THEMES = [
@@ -63,6 +64,7 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
 
                 const onLoadOrError = () => {
                     loadedCount++;
+                    setLoadProgress(Math.round((loadedCount / frameCount) * 100));
                     if (loadedCount === frameCount) {
                         setIsLoading(false);
                         ScrollTrigger.refresh();
@@ -265,7 +267,7 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
     }, [isLoading, images]);
 
     return (
-        <div ref={containerRef} style={{ height: '100vh', width: '100%', position: 'relative', background: "url('/New%20intro/Image%200260.jpg') center center / cover no-repeat", overflow: 'hidden' }}>
+        <div ref={containerRef} style={{ height: '100vh', width: '100%', position: 'relative', background: '#0a0a0a', overflow: 'hidden' }}>
             {/* Canvas is inside the pinned container */}
             <canvas
                 ref={canvasRef}
@@ -384,14 +386,62 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
  
             {isLoading && (
                 <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    color: 'rgba(0,0,0,0.5)',
-                    zIndex: 20
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 9999,
+                    background: '#0a0a0a',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '2rem',
+                    fontFamily: "'Inter', 'Helvetica Neue', sans-serif",
                 }}>
-                    Loading Assets...
+                    {/* Animated logo mark */}
+                    <div style={{ position: 'relative', width: '64px', height: '64px' }}>
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+                            <circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,0.08)" strokeWidth="3"/>
+                            <circle cx="32" cy="32" r="28"
+                                stroke="white"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeDasharray={`${2 * Math.PI * 28}`}
+                                strokeDashoffset={`${2 * Math.PI * 28 * (1 - loadProgress / 100)}`}
+                                style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 0.3s ease' }}
+                            />
+                        </svg>
+                        <div style={{
+                            position: 'absolute', inset: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '13px', fontWeight: 700, color: '#fff', letterSpacing: '-0.02em'
+                        }}>
+                            {loadProgress}%
+                        </div>
+                    </div>
+
+                    {/* Name + title */}
+                    <div style={{ textAlign: 'center' }}>
+                        <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.03em' }}>RANJITH S.</p>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.75rem', fontWeight: 500, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Senior 3D Artist</p>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div style={{ width: '240px', position: 'relative' }}>
+                        <div style={{ height: '2px', background: 'rgba(255,255,255,0.08)', borderRadius: '99px', overflow: 'hidden' }}>
+                            <div style={{
+                                height: '100%',
+                                width: `${loadProgress}%`,
+                                background: 'linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.5) 100%)',
+                                borderRadius: '99px',
+                                transition: 'width 0.3s ease',
+                                boxShadow: '0 0 8px rgba(255,255,255,0.6)'
+                            }}/>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em' }}>LOADING ASSETS</span>
+                            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>{loadProgress} / 100</span>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
