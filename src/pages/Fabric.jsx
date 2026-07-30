@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Cloth3D from '../components/Cloth3D';
 import { motion } from 'framer-motion';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 const Fabric = () => {
     useEffect(() => {
@@ -32,6 +33,13 @@ const Fabric = () => {
                     <p>Exploring chromatic shifts and floating primitives arranged in an elliptical orbital formation.</p>
                 </motion.div>
             </section>
+
+            <BannerScrollNav 
+                prevPageRoute="/animation" 
+                prevLabel="GO TO ANIMATION PAGE" 
+                nextPageRoute="/symmetry" 
+                label="GO TO SYMMETRY PAGE" 
+            />
 
             <style>{`
                 .fabric-page {

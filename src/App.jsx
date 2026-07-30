@@ -1,21 +1,33 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import About from './pages/About';
-import Projects from './pages/Projects';
-import Contact from './pages/Contact';
-import Wireframe from './pages/Wireframe';
-import InMotion from './pages/InMotion';
-import Foundations from './pages/Foundations';
 import Animation from './pages/Animation';
-import Fabric from './pages/Fabric';
 import Symmetry from './pages/Symmetry';
-import KeyFeatures from './pages/KeyFeatures';
 import SmoothScroll from './components/SmoothScroll';
+
+const ScrollToTop = () => {
+  const { pathname, state, hash } = useLocation();
+
+  useEffect(() => {
+    // Reset window & Lenis scroll position to top instantly on every route change
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
+    if (window.lenis) {
+      window.lenis.scrollTo(0, { immediate: true });
+    }
+  }, [pathname, state, hash]);
+
+  return null;
+};
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <SmoothScroll>
 
         <Navbar />
@@ -23,15 +35,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/origin" element={<Home />} />
           <Route path="/creator" element={<About />} />
-          <Route path="/wireframe" element={<Wireframe />} />
-          <Route path="/foundations" element={<Foundations />} />
-          <Route path="/rendered-reality" element={<Projects />} />
-          <Route path="/in-motion" element={<InMotion />} />
           <Route path="/animation" element={<Animation />} />
-          <Route path="/fabric" element={<Fabric />} />
           <Route path="/symmetry" element={<Symmetry />} />
-          <Route path="/key-features" element={<KeyFeatures />} />
-          <Route path="/transmit" element={<Contact />} />
         </Routes>
       </SmoothScroll>
     </Router>

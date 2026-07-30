@@ -162,7 +162,7 @@ const PlusBanner = () => {
     }, []);
 
     return (
-        <section style={{ width: '100vw', height: '100vh', background: '#f0f2f5', position: 'relative' }}>
+        <section style={{ width: '100vw', height: '100vh', background: '#ffffff', position: 'relative' }}>
             <div style={{
                 position: 'absolute',
                 top: '10%',

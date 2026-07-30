@@ -44,21 +44,24 @@ const Fish = () => {
 
     React.useEffect(() => {
         if (actions && Object.keys(actions).length > 0) {
-            Object.values(actions).forEach(action => action.play());
+            Object.values(actions).forEach(action => {
+                action.timeScale = 2.2; // Fast energetic fin swimming
+                action.play();
+            });
         }
     }, [actions]);
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
         if (group.current) {
-            // Large sweeping motion
-            group.current.position.x = Math.sin(t * 0.4) * 40;
-            group.current.position.y = Math.cos(t * 0.3) * 15;
-            group.current.position.z = Math.sin(t * 0.2) * 20;
+            // Fast dynamic swimming motion
+            group.current.position.x = Math.sin(t * 1.2) * 40;
+            group.current.position.y = Math.cos(t * 0.9) * 15;
+            group.current.position.z = Math.sin(t * 0.7) * 20;
             
-            // Rotation based on movement
-            group.current.rotation.y = Math.cos(t * 0.4) * 0.5 + Math.PI / 2;
-            group.current.rotation.z = Math.sin(t * 0.3) * 0.2;
+            // Fast rotation matching movement
+            group.current.rotation.y = Math.cos(t * 1.2) * 0.5 + Math.PI / 2;
+            group.current.rotation.z = Math.sin(t * 0.9) * 0.2;
         }
     });
 

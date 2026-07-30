@@ -249,15 +249,6 @@ const InteractiveScene = ({ theme }) => {
       <directionalLight position={[-5, 8, 5]} intensity={0.8} color="#e8f4ff" />
       <pointLight position={[0, 0, 15]} intensity={1.5} color="#ffffff" />
 
-      {/* White background grid helper */}
-      <gridHelper 
-        args={[40, 30, '#ffffff', '#ffffff']} 
-        rotation={[Math.PI / 2, 0, 0]} 
-        position={[0, 0, -4]}
-        transparent
-        opacity={0.35}
-      />
-
       {/* Center interactive ball — vivid accent color */}
       <mesh ref={ballRef} castShadow receiveShadow>
         <sphereGeometry args={[1, 32, 32]} />

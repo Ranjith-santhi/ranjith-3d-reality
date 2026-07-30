@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-
 import KineticScene from '../components/KineticScene';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 const Symmetry = () => {
     useEffect(() => {
@@ -8,9 +8,15 @@ const Symmetry = () => {
     }, []);
 
     return (
-        <div className="symmetry-page">
+        <div className="symmetry-page" style={{ position: 'relative' }}>
             <KineticScene />
             
+            <BannerScrollNav 
+                prevPageRoute="/animation" 
+                prevLabel="GO TO ANIMATION PAGE" 
+                hideNext={true} 
+            />
+
             <style>{`
                 .symmetry-page {
                     width: 100%;

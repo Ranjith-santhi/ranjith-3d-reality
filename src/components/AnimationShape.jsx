@@ -255,33 +255,33 @@ const PostProcessing = ({ isInteractive }) => {
             <DepthOfField 
                 target={focusRef.current} 
                 focalLength={2.0} 
-                bokehScale={10} 
+                bokehScale={8} 
                 height={700} 
             />
             <Bloom 
-                luminanceThreshold={0.9} 
+                luminanceThreshold={0.85} 
                 luminanceSmoothing={0.9} 
                 height={300} 
-                intensity={0.6} 
+                intensity={0.7} 
             />
-            <Vignette eskil={false} offset={0.1} darkness={1.2} />
+            <Vignette eskil={false} offset={0.1} darkness={0.4} />
         </EffectComposer>
     );
 };
 
 const AnimationShape = () => {
-    const [isInteractive, setIsInteractive] = useState(false);
+    const [isInteractive, setIsInteractive] = useState(true);
 
     return (
         <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
             <div style={{ 
                 width: '100%', 
                 height: '100%', 
-                background: 'radial-gradient(circle at 50% 50%, #080810 0%, #000000 100%)' 
+                background: 'radial-gradient(circle at 50% 50%, #0c0c18 0%, #000000 100%)' 
             }}>
-                <Canvas camera={{ position: [0, 0, 10], fov: 45 }} shadows gl={{ alpha: true }}>
+                <Canvas camera={{ position: [0, 0, 11], fov: 45 }} shadows gl={{ alpha: true }}>
                     <color attach="background" args={['#000000']} />
-                    <ambientLight intensity={0.4} />
+                    <ambientLight intensity={0.5} />
                     
                     {/* Soft AirPods-style Lighting */}
                     <rectAreaLight width={30} height={10} intensity={5} position={[0, 15, 5]} rotation={[-Math.PI / 2.5, 0, 0]} color="#ffffff" />
@@ -309,9 +309,10 @@ const AnimationShape = () => {
                     bottom: '60px',
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    background: isInteractive ? '#000' : '#0008e7',
+                    background: isInteractive ? 'rgba(0, 8, 231, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                     color: '#fff',
-                    border: 'none',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)',
                     padding: '15px 40px',
                     borderRadius: '50px',
                     fontFamily: 'Inter, sans-serif',
@@ -320,20 +321,20 @@ const AnimationShape = () => {
                     letterSpacing: '2px',
                     cursor: 'pointer',
                     zIndex: 100,
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     textTransform: 'uppercase'
                 }}
                 onMouseEnter={(e) => {
                     e.target.style.transform = 'translateX(-50%) scale(1.05)';
-                    e.target.style.boxShadow = '0 15px 40px rgba(0,0,0,0.3)';
+                    e.target.style.boxShadow = '0 15px 40px rgba(0,0,0,0.4)';
                 }}
                 onMouseLeave={(e) => {
                     e.target.style.transform = 'translateX(-50%) scale(1)';
-                    e.target.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+                    e.target.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
                 }}
             >
-                {isInteractive ? 'TRANSITION TO GRID' : 'ACTIVATE TRANSMIT'}
+                {isInteractive ? 'TRANSFORM TO GRID' : 'ACTIVATE TRANSMIT MODEL'}
             </button>
         </div>
     );

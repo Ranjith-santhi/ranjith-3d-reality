@@ -10,8 +10,8 @@ const AnemoneMaterial = {
         uAmp: { value: 0.6 },
         uMouse: { value: new THREE.Vector3(0, 0, 0) },
         uFish: { value: new THREE.Vector3(0, 0, 0) },
-        uColorA: { value: new THREE.Color('#8000ff') }, 
-        uColorB: { value: new THREE.Color('#ff2db1') }, 
+        uColorA: { value: new THREE.Color('#8000ff') },
+        uColorB: { value: new THREE.Color('#ff2db1') },
         uOpacity: { value: 0.8 }
     },
     vertexShader: `
@@ -130,33 +130,33 @@ const AnemoneStalk = ({ position, delay, freq, amp, colorA, colorB, mouseRef, fi
                 material.uniforms.uFish.value.copy(fishPosRef.current);
             }
         }
-        
+
         if (tipRef.current) {
             const worldX = position[0];
             const worldZ = position[2];
-            
+
             // Mouse Interaction on Tip
             const distM = Math.sqrt(Math.pow(worldX - mouseRef.current.x, 2) + Math.pow(worldZ - mouseRef.current.z, 2));
             const mouseStrength = Math.max(0, (10 - distM) / 10) * 1.2;
             const dxM = worldX - mouseRef.current.x;
             const dzM = worldZ - mouseRef.current.z;
-            const magM = Math.sqrt(dxM*dxM + dzM*dzM) || 1;
+            const magM = Math.sqrt(dxM * dxM + dzM * dzM) || 1;
 
             // Fish Interaction on Tip
             let fishStrength = 0;
-            let pushX = (dxM/magM) * mouseStrength;
-            let pushZ = (dzM/magM) * mouseStrength;
+            let pushX = (dxM / magM) * mouseStrength;
+            let pushZ = (dzM / magM) * mouseStrength;
 
             if (fishPosRef?.current) {
                 const distF = Math.sqrt(Math.pow(worldX - fishPosRef.current.x, 2) + Math.pow(worldZ - fishPosRef.current.z, 2));
                 fishStrength = Math.max(0, (8 - distF) / 8) * 2.5;
                 const dxF = worldX - fishPosRef.current.x;
                 const dzF = worldZ - fishPosRef.current.z;
-                const magF = Math.sqrt(dxF*dxF + dzF*dzF) || 1;
-                pushX += (dxF/magF) * fishStrength;
-                pushZ += (dzF/magF) * fishStrength;
+                const magF = Math.sqrt(dxF * dxF + dzF * dzF) || 1;
+                pushX += (dxF / magF) * fishStrength;
+                pushZ += (dzF / magF) * fishStrength;
             }
-            
+
             const wave = Math.sin(time * freq + halfH * 0.9) * amp + pushX;
             const waveZ = Math.cos(time * (freq * 0.8) + halfH * 0.7) * (amp * 0.6) + pushZ;
             tipRef.current.position.set(wave, halfH, waveZ);
@@ -184,7 +184,7 @@ const InstancedBubbles = () => {
     const count = 500;
     const meshRef = useRef();
     const tempObject = useMemo(() => new THREE.Object3D(), []);
-    
+
     const material = useMemo(() => new THREE.ShaderMaterial({
         ...BubbleMaterialProps,
         transparent: true,
@@ -208,10 +208,10 @@ const InstancedBubbles = () => {
         bubbles.forEach((b, i) => {
             b.y += b.speed * delta;
             if (b.y > 35) b.y = -35;
-            
+
             const swayX = Math.sin(t * b.sway + b.phase) * 0.3;
             const swayZ = Math.cos(t * b.sway * 0.8 + b.phase) * 0.3;
-            
+
             tempObject.position.set(b.x + swayX, b.y, b.z + swayZ);
             tempObject.scale.setScalar(b.size);
             tempObject.updateMatrix();
@@ -231,9 +231,9 @@ const SeaFloor = () => {
     return (
         <mesh position={[0, -11, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
             <planeGeometry args={[150, 100, 32, 32]} />
-            <meshStandardMaterial 
-                color="#01040a" 
-                roughness={1} 
+            <meshStandardMaterial
+                color="#01040a"
+                roughness={1}
                 metalness={0.1}
                 flatShading={true}
             />
@@ -243,15 +243,15 @@ const SeaFloor = () => {
 
 const SeaAnemoneField = ({ mouseRef, fishPosRef }) => {
     const stalks = useMemo(() => {
-        const count = 950; 
+        const count = 950;
         return Array.from({ length: count }).map((_, i) => {
-            const h = 3 + Math.random() * 5; 
+            const h = 3 + Math.random() * 5;
             return {
                 id: i,
                 height: h,
                 position: [
-                    (Math.random() - 0.5) * 70, 
-                    -11 + Math.random() * 2, 
+                    (Math.random() - 0.5) * 70,
+                    -11 + Math.random() * 2,
                     (Math.random() - 0.5) * 40
                 ],
                 delay: Math.random() * 30,
@@ -279,12 +279,12 @@ const LightRays = () => {
             {Array.from({ length: 15 }).map((_, i) => (
                 <mesh key={i} position={[i * 10 - 75, 0, 0]} rotation={[0, 0, (i - 7) * 0.04]}>
                     <planeGeometry args={[8, 120]} />
-                    <meshBasicMaterial 
-                        color="#4ed9ff" 
-                        transparent 
-                        opacity={0.03} 
-                        blending={THREE.AdditiveBlending} 
-                        side={THREE.DoubleSide} 
+                    <meshBasicMaterial
+                        color="#4ed9ff"
+                        transparent
+                        opacity={0.03}
+                        blending={THREE.AdditiveBlending}
+                        side={THREE.DoubleSide}
                     />
                 </mesh>
             ))}
@@ -301,7 +301,10 @@ const ClownFish = ({ fishPosRef, mouseRef }) => {
 
     useEffect(() => {
         if (actions && Object.keys(actions).length > 0) {
-            Object.values(actions).forEach(action => action.play());
+            Object.values(actions).forEach(action => {
+                action.timeScale = 2.2; // Fast energetic fin swimming
+                action.play();
+            });
         }
         scene.traverse((child) => {
             if (child.isMesh && child.material) {
@@ -316,29 +319,29 @@ const ClownFish = ({ fishPosRef, mouseRef }) => {
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
         if (group.current) {
-            // Idle bobbing
-            const idleX = Math.sin(t * 0.3) * 2;
-            const idleY = Math.cos(t * 1.2) * 0.3;
-            const idleZ = Math.sin(t * 0.5) * 1.5;
+            // Active swimming motion
+            const idleX = Math.sin(t * 1.2) * 2.5;
+            const idleY = Math.cos(t * 2.5) * 0.5;
+            const idleZ = Math.sin(t * 1.5) * 2.0;
 
             // Follow mouse with clamped range
             const targetX = THREE.MathUtils.clamp(mouseRef.current.x + idleX, -35, 35);
-            const targetY = THREE.MathUtils.clamp(mouseRef.current.y + idleY + 2.5, -9.5, -5); 
+            const targetY = THREE.MathUtils.clamp(mouseRef.current.y + idleY + 2.5, -9.5, -5);
             const targetZ = THREE.MathUtils.clamp(mouseRef.current.z + idleZ, -20, 35);
-            
-            targetPos.set(targetX, targetY, targetZ);
-            
-            // Smoothly move towards target
-            group.current.position.lerp(targetPos, 0.03);
 
-            // Rotate towards movement direction
+            targetPos.set(targetX, targetY, targetZ);
+
+            // Fast responsive movement tracking
+            group.current.position.lerp(targetPos, 0.14);
+
+            // Fast turning rotation
             const direction = new THREE.Vector3().subVectors(group.current.position, lastPos);
             if (direction.length() > 0.01) {
                 const targetRotation = new THREE.Quaternion().setFromUnitVectors(
-                    new THREE.Vector3(0, 0, 1), 
+                    new THREE.Vector3(0, 0, 1),
                     direction.normalize()
                 );
-                group.current.quaternion.slerp(targetRotation, 0.1);
+                group.current.quaternion.slerp(targetRotation, 0.3);
             }
             lastPos.copy(group.current.position);
 
@@ -350,10 +353,10 @@ const ClownFish = ({ fishPosRef, mouseRef }) => {
 
     return (
         <group ref={group}>
-            <primitive 
-                object={scene} 
-                scale={0.1} 
-                rotation={[0, 0, 0]} 
+            <primitive
+                object={scene}
+                scale={0.1}
+                rotation={[0, 0, 0]}
             />
         </group>
     );
@@ -416,13 +419,13 @@ const SeaBanner = () => {
     const fishPosRef = useRef(new THREE.Vector3(0, -10, 0));
 
     return (
-        <section 
-            style={{ 
-                width: '100vw', 
-                height: '100vh', 
-                background: 'linear-gradient(to bottom, #001a33, #00040a)', // Deep Abyss Gradient
-                position: 'relative', 
-                overflow: 'hidden' 
+        <section
+            style={{
+                width: '100vw',
+                height: '100vh',
+                background: '#000000', // Black theme
+                position: 'relative',
+                overflow: 'hidden'
             }}
         >
             <div style={{
@@ -431,22 +434,22 @@ const SeaBanner = () => {
                 left: '0',
                 width: '100%',
                 height: '40%',
-                background: 'linear-gradient(to bottom, rgba(78, 217, 255, 0.15), transparent)', // Sky blue surface glow
+                background: 'linear-gradient(to bottom, #000000 0%, transparent 100%)', // Seamless dark transition from Transmit Core
                 zIndex: 1,
                 pointerEvents: 'none'
             }} />
 
             <Canvas camera={{ position: [0, -2, 42], fov: 45 }} gl={{ alpha: true }}>
                 <ambientLight intensity={1.2} />
-                <directionalLight 
-                    position={[10, 50, 10]} 
-                    intensity={2.5} 
-                    color="#ffffff" 
-                    castShadow 
+                <directionalLight
+                    position={[10, 50, 10]}
+                    intensity={2.5}
+                    color="#ffffff"
+                    castShadow
                     shadow-mapSize={[2048, 2048]}
                 />
                 <pointLight position={[0, 25, 20]} intensity={20} color="#00ffff" />
-                
+
                 <Suspense fallback={null}>
                     <LightRays />
                     <AnimatedSpotlight />

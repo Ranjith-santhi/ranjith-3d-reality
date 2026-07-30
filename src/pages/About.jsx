@@ -1,14 +1,38 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-import HorizontalGallery from '../components/HorizontalGallery';
+import AnimationShape from '../components/AnimationShape';
+import SeaBanner from '../components/SeaBanner';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 const About = () => {
     const videoRef = useRef(null);
     const containerRef = useRef(null);
+    const carHeroRef = useRef(null);
+    const transmitRef = useRef(null);
+    const seaRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [progress, setProgress] = useState(0); // 0 to 1
     const [videoDuration, setVideoDuration] = useState(0);
+    const [isFadingIn, setIsFadingIn] = useState(true);
+    const [isFadingOut, setIsFadingOut] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        if (window.lenis) {
+            window.lenis.scrollTo(0, { immediate: true });
+        }
+
+        const timer = setTimeout(() => {
+            setIsFadingIn(false);
+        }, 50);
+        return () => clearTimeout(timer);
+    }, []);
+
 
 
     // Smooth progress for visual elements
@@ -167,8 +191,22 @@ const About = () => {
                 MozUserSelect: 'none'
             }}
         >
+            {/* Smooth Fade Transition Overlay */}
+            <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: '#000000',
+                zIndex: 99999,
+                pointerEvents: (isFadingIn || isFadingOut) ? 'auto' : 'none',
+                opacity: (isFadingIn || isFadingOut) ? 1 : 0,
+                transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+            }} />
+
             {/* Sticky Hero Section */}
-            <div style={{ height: '100vh', position: 'sticky', top: 0, overflow: 'hidden' }}>
+            <div ref={carHeroRef} style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'relative', height: '100%' }}>
                     {/* Background Video (The Car) */}
                     <div style={{
@@ -207,18 +245,21 @@ const About = () => {
                     </div>
 
                     {/* Content Overlay */}
-                    <div style={{
-                        position: 'relative',
-                        zIndex: 10,
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        padding: '8rem 4rem 4rem 4rem', // Increased top padding from 4rem to 8rem
-                        pointerEvents: 'none'
-                    }}>
+                    <div 
+                        className="about-hero-content"
+                        style={{
+                            position: 'relative',
+                            zIndex: 10,
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            padding: '8rem 4rem 4rem 4rem',
+                            pointerEvents: 'none'
+                        }}
+                    >
                         {/* Header Text */}
-                        <div style={{ maxWidth: '40%', marginTop: '2rem' }}>
+                        <div className="about-header-text" style={{ maxWidth: '40%', marginTop: '2rem' }}>
                             <motion.h1
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{
@@ -227,7 +268,7 @@ const About = () => {
                                 }}
                                 transition={{ duration: 0.8, ease: "easeOut" }}
                                 style={{
-                                    fontSize: '3.5rem',
+                                    fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
                                     lineHeight: 0.9,
                                     fontWeight: 900,
                                     margin: 0,
@@ -242,6 +283,7 @@ const About = () => {
 
                         {/* Bottom Specifications Bar */}
                         <motion.div
+                            className="about-specs-bar"
                             animate={{ opacity: isPlaying ? 0 : 1 }}
                             transition={{ duration: 0.8, ease: "easeInOut" }}
                             style={{
@@ -279,6 +321,7 @@ const About = () => {
 
                         {/* Footer Text */}
                         <motion.div
+                            className="about-footer-text"
                             animate={{ opacity: isPlaying ? 0 : 1 }}
                             transition={{ duration: 0.8 }}
                             style={{ alignSelf: 'flex-end', maxWidth: '350px', textAlign: 'right' }}
@@ -440,72 +483,38 @@ const About = () => {
                             </motion.div>
                         )}
                     </AnimatePresence>
-
-
                 </div>
+                <BannerScrollNav 
+                    targetRef={carHeroRef} 
+                    prevPageRoute="/origin" 
+                    prevLabel="GO TO ORIGIN PAGE" 
+                    nextTargetRef={transmitRef} 
+                    label="NEXT SECTION" 
+                />
             </div>
 
-            {/* Featured Horizontal scrolling Gallery */}
-            <div style={{ backgroundColor: '#050505', color: '#fff', position: 'relative', zIndex: 35 }}>
-                <HorizontalGallery />
+            {/* Transmit Core (Animation Shape) */}
+            <div ref={transmitRef} style={{ position: 'relative', width: '100%', backgroundColor: '#000000', zIndex: 45 }}>
+                <AnimationShape />
+                <BannerScrollNav 
+                    targetRef={transmitRef} 
+                    prevTargetRef={carHeroRef} 
+                    prevLabel="PREVIOUS SECTION" 
+                    nextTargetRef={seaRef} 
+                    label="NEXT SECTION" 
+                />
             </div>
 
-            {/* Next Section: Heritage & Design */}
-            <div style={{
-                position: 'relative',
-                zIndex: 40,
-                backgroundColor: '#050505',
-                padding: '10rem 4rem',
-                minHeight: '100vh',
-                borderTop: '1px solid rgba(255,255,255,0.05)'
-            }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1 }}
-                    >
-                        <h2 style={{
-                            fontSize: 'clamp(3rem, 8vw, 6rem)',
-                            fontWeight: 900,
-                            lineHeight: 0.9,
-                            marginBottom: '4rem',
-                            letterSpacing: '-0.03em'
-                        }}>
-                            THE ARCHITECTURE<br />
-                            <span>OF PERSISTENCE</span>
-                        </h2>
-
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                            gap: '4rem'
-                        }}>
-                            <div>
-                                <h3 style={{ fontSize: '0.8rem', letterSpacing: '0.3em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Legacy</h3>
-                                <p style={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
-                                    Founded on the principle that true design never ages, Antigravity seeks to bridge the gap between
-                                    historical excellence and future-proof technology. Our process is a dialogue with the past.
-                                </p>
-                            </div>
-                            <div>
-                                <h3 style={{ fontSize: '0.8rem', letterSpacing: '0.3em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Philosophy</h3>
-                                <p style={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
-                                    We don't just restore; we reimagine. By integrating carbon-composite architectures and next-generation
-                                    aerodynamics, we ensure that every classic is not just preserved, but evolved.
-                                </p>
-                            </div>
-                            <div>
-                                <h3 style={{ fontSize: '0.8rem', letterSpacing: '0.3em', marginBottom: '1.5rem', textTransform: 'uppercase' }}>Future</h3>
-                                <p style={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
-                                    The road ahead is silent and electric, but it doesn't have to be clinical. We infuse digital soul
-                                    into every analog heartbeat, creating an unmatched sensory experience.
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
+            {/* Benthic Core (Sea Banner) */}
+            <div ref={seaRef} style={{ position: 'relative', width: '100%', backgroundColor: '#000000', zIndex: 45 }}>
+                <SeaBanner />
+                <BannerScrollNav 
+                    targetRef={seaRef} 
+                    prevTargetRef={transmitRef} 
+                    prevLabel="PREVIOUS SECTION" 
+                    nextPageRoute="/animation" 
+                    label="GO TO ANIMATION PAGE" 
+                />
             </div>
 
         </div>

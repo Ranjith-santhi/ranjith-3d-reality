@@ -1,22 +1,37 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import AnimationShape from '../components/AnimationShape';
-import CubeSection from '../components/CubeSection';
 import SeaBanner from '../components/SeaBanner';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 const Contact = () => {
-    return (
-        <div style={{ position: 'relative', width: '100vw', backgroundColor: '#050505', minHeight: '300vh' }}>
-            {/* Hero Section */}
-            <section style={{ height: '100vh', position: 'relative' }}>
-                <AnimationShape />
-            </section>
+    const transmitRef = useRef(null);
+    const seaRef = useRef(null);
 
-            {/* Cube Section */}
-            <div>
-                <CubeSection />
+    return (
+        <div style={{ position: 'relative', width: '100vw', backgroundColor: '#000000', overflowX: 'hidden' }}>
+            {/* Transmit Core Hero Section */}
+            <div ref={transmitRef} style={{ position: 'relative', width: '100%', background: '#000000' }}>
+                <AnimationShape />
+                <BannerScrollNav 
+                    targetRef={transmitRef} 
+                    prevPageRoute="/structural-sweep" 
+                    prevLabel="GO TO STRUCTURAL PAGE" 
+                    nextTargetRef={seaRef} 
+                    label="NEXT SECTION" 
+                />
             </div>
-            {/* Sea Banner (Benthic Core) */}
-            <SeaBanner />
+
+            {/* Benthic Core (Sea Banner) Section */}
+            <div ref={seaRef} style={{ position: 'relative', width: '100%', background: '#000000' }}>
+                <SeaBanner />
+                <BannerScrollNav 
+                    targetRef={seaRef} 
+                    prevTargetRef={transmitRef} 
+                    prevLabel="PREVIOUS SECTION" 
+                    nextPageRoute="/origin" 
+                    label="GO TO ORIGIN PAGE" 
+                />
+            </div>
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -223,6 +224,12 @@ const InMotion = () => {
             Loading Animation...
           </div>
         )}
+        <BannerScrollNav 
+          prevPageRoute="/creator" 
+          prevLabel="GO TO CREATOR PAGE" 
+          nextPageRoute="/animation" 
+          label="GO TO ANIMATION PAGE" 
+        />
       </div>
     </div>
   );

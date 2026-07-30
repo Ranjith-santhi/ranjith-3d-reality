@@ -1,23 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
+import { OrbitControls, Environment } from '@react-three/drei';
 import Book3D from '../components/Book3D';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 const tabs = [
-  'Intro', 'Page 1', 'Page 2', 'Page 3', 'Page 4', 'Page 5', 'Page 6', 'Page 7', 'Page 8', 'Page 9', 'Close'
+  'Cover', 'Nardil', 'Skill-Lync', 'Sciencotonic', 'Expertise', 'Contact', 'Close'
 ];
 
-const Wireframe = ({ externalBgColor }) => {
-    const [activeTab, setActiveTab] = useState(0);
-    const [textSizeScale, setTextSizeScale] = useState(1.0);
+const Wireframe = ({ externalBgColor, onBookComplete, initialTab }) => {
+    const [activeTab, setActiveTab] = useState(() => {
+        const startPage = sessionStorage.getItem('book_start_page');
+        if (startPage === 'end') {
+            sessionStorage.removeItem('book_start_page');
+            return tabs.length - 1; // End page when returning from Creator
+        }
+        return initialTab !== undefined ? initialTab : 0; // Front page (Intro) by default
+    });
+    const [textSizeScale, setTextSizeScale] = useState(2.1);
     const [fontFamily, setFontFamily] = useState('Inter, sans-serif');
-    const [bgColor, setBgColor] = useState('#4a457c');
+    const [bgColor, setBgColor] = useState('#ffffff');
+    const containerRef = useRef(null);
+    const activeTabRef = useRef(activeTab);
 
-    React.useEffect(() => {
+    useEffect(() => {
+        const startPage = sessionStorage.getItem('book_start_page');
+        if (startPage === 'end') {
+            sessionStorage.removeItem('book_start_page');
+            setActiveTab(tabs.length - 1);
+        }
+    }, []);
+
+    useEffect(() => {
+        activeTabRef.current = activeTab;
+    }, [activeTab]);
+
+    useEffect(() => {
         if (externalBgColor) {
             setBgColor(externalBgColor);
         }
     }, [externalBgColor]);
+
+    // Scroll & Wheel event listener for 3D Book page flipping
+    useEffect(() => {
+        let lastTime = 0;
+
+        const handleWheel = (e) => {
+            const container = containerRef.current;
+            if (!container) return;
+
+            // ONLY start turning pages after the 3D book section is fully visible / centered on screen
+            const rect = container.getBoundingClientRect();
+            const isFullyVisible = Math.abs(rect.top) <= 80;
+            if (!isFullyVisible) return;
+
+            // Ignore if mouse is interacting with UI dropdowns/inputs
+            if (e.target && e.target.closest && e.target.closest('.ui-container')) return;
+
+            const currentTab = activeTabRef.current;
+            const delta = e.deltaY;
+            const absDelta = Math.abs(delta);
+            if (!delta || absDelta < 25) return; // Require intentional scroll force
+
+            const now = Date.now();
+            // Smooth, controlled cooldown (380ms) for elegant one-by-one page turns
+            const cooldown = 380;
+
+            if (delta > 0 && currentTab < tabs.length - 1) {
+                if (now - lastTime >= cooldown) {
+                    setActiveTab(prev => Math.min(prev + 1, tabs.length - 1));
+                    lastTime = now;
+                }
+            } else if (delta < 0 && currentTab > 0) {
+                if (now - lastTime >= cooldown) {
+                    setActiveTab(prev => Math.max(prev - 1, 0));
+                    lastTime = now;
+                }
+            }
+        };
+
+        const element = containerRef.current;
+        if (element) {
+            element.addEventListener('wheel', handleWheel, { passive: true });
+        }
+        return () => {
+            if (element) {
+                element.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, []);
 
     const handleScreenClick = (e) => {
         // Ignore if clicking on interactive UI elements
@@ -40,7 +111,7 @@ const Wireframe = ({ externalBgColor }) => {
     };
 
     return (
-        <div onClick={handleScreenClick} style={{ position: 'relative', width: '100vw', height: '100vh', background: '#ffffff', overflow: 'hidden' }}>
+        <div ref={containerRef} onClick={handleScreenClick} style={{ position: 'relative', width: '100vw', height: '100vh', background: '#ffffff', overflow: 'hidden' }}>
             
             {/* Header Overlay */}
             <div style={{ position: 'absolute', top: '40px', left: 0, width: '100%', zIndex: 10, textAlign: 'center', pointerEvents: 'none' }}>
@@ -48,22 +119,22 @@ const Wireframe = ({ externalBgColor }) => {
             </div>
 
             {/* Customization Menu */}
-            <div className="ui-container" style={{ 
+            <div className="ui-container wireframe-ui-container" style={{ 
                 position: 'absolute', 
                 top: '140px', 
                 right: '20px', 
-                background: 'rgba(0, 0, 0, 0.85)', 
+                background: 'rgba(255, 255, 255, 0.85)', 
                 backdropFilter: 'blur(10px)', 
                 padding: '20px', 
                 borderRadius: '15px', 
                 zIndex: 20, 
-                color: '#ffffff',
+                color: '#111111',
                 fontFamily: 'Inter, sans-serif',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                boxShadow: '0 10px 30px rgba(255, 255, 255, 0.1)'
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)'
             }}>
                 <div style={{ marginBottom: '15px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Text Scale</label>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold', color: '#111111' }}>Text Scale</label>
                     <input 
                         type="range" 
                         min="0.5" 
@@ -75,16 +146,16 @@ const Wireframe = ({ externalBgColor }) => {
                     />
                 </div>
                 <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold', color: '#333' }}>Typography</label>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 'bold', color: '#111111' }}>Typography</label>
                     <select 
                         value={fontFamily}
                         onChange={(e) => setFontFamily(e.target.value)}
                         style={{
                             width: '100%',
                             padding: '8px',
-                            background: 'rgba(0, 0, 0, 0.2)',
-                            color: '#ffffff',
-                            border: '1px solid rgba(0, 0, 0, 0.1)',
+                            background: 'rgba(240, 240, 240, 0.9)',
+                            color: '#111111',
+                            border: '1px solid rgba(0, 0, 0, 0.15)',
                             borderRadius: '8px',
                             outline: 'none',
                             cursor: 'pointer'
@@ -95,20 +166,15 @@ const Wireframe = ({ externalBgColor }) => {
                         <option value="'Courier New', Courier, monospace" style={{ color: '#000' }}>Typewriter</option>
                         <option value="'Comic Sans MS', cursive, sans-serif" style={{ color: '#000' }}>Comic Sans</option>
                         <option value="Impact, fantasy" style={{ color: '#000' }}>Impact</option>
-                        <option value="Inter, sans-serif">Inter (Modern)</option>
-                        <option value="serif">Serif (Classic)</option>
-                        <option value="'Courier New', Courier, monospace">Typewriter</option>
-                        <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans</option>
-                        <option value="Impact, fantasy">Impact</option>
                     </select>
                 </div>
             </div>
 
             {/* 3D Canvas */}
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                <Canvas camera={{ position: [0, 2, 8], fov: 45 }} style={{ background: '#000000' }}>
-                    <color attach="background" args={['#000000']} />
-                    <ambientLight intensity={0.8} color="#ffffff" />
+                <Canvas camera={{ position: [0, 2, 8], fov: 45 }} style={{ background: '#ffffff' }}>
+                    <color attach="background" args={['#ffffff']} />
+                    <ambientLight intensity={0.9} color="#ffffff" />
                     <directionalLight 
                         position={[5, 12, 8]} 
                         intensity={1.5} 
@@ -130,14 +196,6 @@ const Wireframe = ({ externalBgColor }) => {
                     />
                     
                     <Environment preset="studio" />
-                    
-                    <ContactShadows 
-                        position={[0, -0.5, 0]} 
-                        opacity={0.4} 
-                        scale={20} 
-                        blur={2} 
-                        far={5} 
-                    />
                 </Canvas>
             </div>
 
@@ -154,11 +212,12 @@ const Wireframe = ({ externalBgColor }) => {
             }}>
                 <div style={{
                     display: 'flex',
-                    background: 'rgba(0, 0, 0, 0.8)',
+                    background: 'rgba(255, 255, 255, 0.85)',
                     backdropFilter: 'blur(10px)',
                     padding: '10px',
                     borderRadius: '50px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(0,0,0,0.08)',
                     gap: '5px',
                     overflowX: 'auto',
                     maxWidth: '100%'
@@ -171,8 +230,8 @@ const Wireframe = ({ externalBgColor }) => {
                                 padding: '10px 20px',
                                 border: 'none',
                                 borderRadius: '30px',
-                                backgroundColor: activeTab === idx ? '#111' : 'transparent',
-                                color: activeTab === idx ? '#fff' : '#444',
+                                backgroundColor: activeTab === idx ? '#111111' : 'transparent',
+                                color: activeTab === idx ? '#ffffff' : '#666666',
                                 fontWeight: activeTab === idx ? 'bold' : 'normal',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
@@ -185,6 +244,12 @@ const Wireframe = ({ externalBgColor }) => {
                 </div>
             </div>
             
+            <BannerScrollNav 
+                prevPageRoute="/creator" 
+                prevLabel="GO TO CREATOR PAGE" 
+                nextPageRoute="/foundations" 
+                label="GO TO FOUNDATIONS PAGE" 
+            />
         </div>
     );
 };

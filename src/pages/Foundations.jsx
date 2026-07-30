@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PlusBanner from '../components/PlusBanner';
+import BannerScrollNav from '../components/BannerScrollNav';
 
 const Foundations = () => {
+    const plusRef = useRef(null);
+    const blockRef = useRef(null);
+
     const colors = {
         blue: '#0d4eaf',
         green: '#43a028',
@@ -25,9 +29,18 @@ const Foundations = () => {
             backgroundColor: '#ffffff',
             overflowX: 'hidden' 
         }}>
-            <PlusBanner />
+            <div ref={plusRef} style={{ position: 'relative' }}>
+                <PlusBanner />
+                <BannerScrollNav 
+                    targetRef={plusRef} 
+                    prevPageRoute="/creator" 
+                    prevLabel="GO TO CREATOR PAGE" 
+                    nextTargetRef={blockRef} 
+                    label="NEXT SECTION" 
+                />
+            </div>
             
-            <div style={{
+            <div ref={blockRef} style={{
                 height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
@@ -57,6 +70,13 @@ const Foundations = () => {
                         </div>
                     ))}
                 </div>
+                <BannerScrollNav 
+                    targetRef={blockRef} 
+                    prevTargetRef={plusRef} 
+                    prevLabel="PREVIOUS SECTION" 
+                    nextPageRoute="/in-motion" 
+                    label="GO TO IN MOTION PAGE" 
+                />
             </div>
         </div>
     );

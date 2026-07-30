@@ -43,7 +43,7 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
         }
     };
 
-    const frameCount = 256;
+    const frameCount = 260;
 
     // Load images
     useEffect(() => {
@@ -58,8 +58,8 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
 
             for (let i = 1; i <= frameCount; i++) {
                 const img = new Image();
-                const filename = 'ezgif-frame-' + i.toString().padStart(3, '0') + '.jpg';
-                img.src = '/sequence/' + filename;
+                const filename = 'Image ' + i.toString().padStart(4, '0') + '.jpg';
+                img.src = '/New%20intro/' + encodeURIComponent(filename);
 
                 const onLoadOrError = () => {
                     loadedCount++;
@@ -92,7 +92,11 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
         if (img && img.complete && img.naturalHeight !== 0) {
             const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
             const x = (canvas.width / 2) - (img.width / 2) * scale;
-            const y = (canvas.height / 2) - (img.height / 2) * scale;
+            
+            // Shift the image down slightly (+80px) to prevent top cropping, while keeping boundaries safe
+            const maxScrollY = canvas.height - img.height * scale;
+            const centerY = (canvas.height - img.height * scale) / 2;
+            const y = Math.min(0, Math.max(maxScrollY, centerY + 80));
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
@@ -261,7 +265,7 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
     }, [isLoading, images]);
 
     return (
-        <div ref={containerRef} style={{ height: '100vh', width: '100%', position: 'relative', background: 'radial-gradient(circle at 50% 50%, #f0f4f8 0%, #d9e2ec 100%)', overflow: 'hidden' }}>
+        <div ref={containerRef} style={{ height: '100vh', width: '100%', position: 'relative', background: "url('/New%20intro/Image%200260.jpg') center center / cover no-repeat", overflow: 'hidden' }}>
             {/* Canvas is inside the pinned container */}
             <canvas
                 ref={canvasRef}
@@ -378,55 +382,6 @@ const ScrollSequence = ({ externalThemeIndex, onExternalThemeChange, externalThe
                 </div>
             </div>
  
-            {/* Scroll Down Indicator Button */}
-            <div 
-                ref={scrollIconRef}
-                style={{
-                    position: 'absolute',
-                    bottom: '8%',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    opacity: 0,
-                    zIndex: 20,
-                    pointerEvents: 'auto'
-                }}
-            >
-                <button 
-                    onClick={() => {
-                        // Scroll down by 1.5 window heights to ensure we pass the pin
-                        window.scrollBy({ top: window.innerHeight * 1.5, behavior: 'smooth' });
-                    }}
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '12px 28px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                        backdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(0, 0, 0, 0.15)',
-                        borderRadius: '40px',
-                        color: '#000000',
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
-                        transition: 'all 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.08)';
-                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.04)';
-                        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.05)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                >
-                    Scroll Down <ChevronDown size={20} />
-                </button>
-            </div>
-
             {isLoading && (
                 <div style={{
                     position: 'absolute',
