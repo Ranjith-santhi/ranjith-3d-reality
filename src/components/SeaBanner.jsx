@@ -374,6 +374,9 @@ const AnimatedSpotlight = () => {
             targetRef.current.position.x = Math.sin(t * 0.4) * 30;
             targetRef.current.position.z = Math.cos(t * 0.3) * 15;
         }
+        if (lightRef.current && targetRef.current && lightRef.current.target !== targetRef.current) {
+            lightRef.current.target = targetRef.current;
+        }
     });
 
     return (
@@ -392,8 +395,6 @@ const AnimatedSpotlight = () => {
             <mesh ref={targetRef} position={[0, -10, 0]} visible={false}>
                 <sphereGeometry args={[1]} />
             </mesh>
-            {/* Direct the light at the target */}
-            {lightRef.current && (lightRef.current.target = targetRef.current)}
         </group>
     );
 };
