@@ -58,13 +58,13 @@ const BannerScrollNav = ({
                             display: 'flex',
                             alignItems: 'center',
                             gap: '10px',
-                            padding: '12px 26px',
+                            padding: '8px 18px',
                             backgroundColor: 'rgba(15, 15, 20, 0.75)',
                             backdropFilter: 'blur(12px)',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
                             borderRadius: '40px',
                             color: '#ffffff',
-                            fontSize: '0.85rem',
+                            fontSize: '0.65rem',
                             fontWeight: '700',
                             letterSpacing: '1.5px',
                             cursor: 'pointer',
@@ -84,7 +84,7 @@ const BannerScrollNav = ({
                             e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.4)';
                         }}
                     >
-                        <ChevronUp size={18} style={{ animation: 'bounceUp 1.5s infinite' }} />
+                        <ChevronUp size={14} style={{ animation: 'bounceUp 1.5s infinite' }} />
                         <span>{prevLabel}</span>
                     </button>
                 </div>
@@ -108,13 +108,13 @@ const BannerScrollNav = ({
                             display: 'flex',
                             alignItems: 'center',
                             gap: '10px',
-                            padding: '12px 26px',
+                            padding: '8px 18px',
                             backgroundColor: 'rgba(15, 15, 20, 0.75)',
                             backdropFilter: 'blur(12px)',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
                             borderRadius: '40px',
                             color: '#ffffff',
-                            fontSize: '0.85rem',
+                            fontSize: '0.65rem',
                             fontWeight: '700',
                             letterSpacing: '1.5px',
                             cursor: 'pointer',
@@ -135,7 +135,7 @@ const BannerScrollNav = ({
                         }}
                     >
                         <span>{label}</span>
-                        <ChevronDown size={18} style={{ animation: 'bounceDown 1.5s infinite' }} />
+                        <ChevronDown size={14} style={{ animation: 'bounceDown 1.5s infinite' }} />
                     </button>
                 </div>
             )}
